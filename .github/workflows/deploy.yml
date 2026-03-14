@@ -21,22 +21,18 @@ jobs:
           go-version: '1.22'
       - name: Build 🏗️
         run: |
-          mkdir -p staging
+          mkdir -p stage
           
           # 1. Build the WASM
-          GOOS=js GOARCH=wasm go build -o staging/main.wasm main.go
+          GOOS=js GOARCH=wasm go build -o stage/main.wasm main.go
           
-          # 2. Fetch the glue script directly from the Go source for 1.22
-          # This ensures version compatibility without hunting for local paths
           curl -L https://raw.githubusercontent.com/golang/go/release-branch.go1.22/misc/wasm/wasm_exec.js -o staging/wasm_exec.js
           
-          # 3. Copy your assets
-          # Make sure 'dist/index.html' actually exists in your repo
-          cp dist/index.html staging/
-          cp -r rom staging/
+          cp dist/index.html stage/
+          cp -r rom stage/
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: staging
+          folder: stage
           branch: gh-pages
