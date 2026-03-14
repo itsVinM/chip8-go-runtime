@@ -94,7 +94,7 @@ To assist in development and ROM analysis, a real-time debugger is integrated in
 * **Input Monitoring:** Visual feedback of the 16-key hex keypad state.
 * **Fault Reporting:** Immediate visual feedback in the UI when a CPU Halt is triggered, displaying the specific error (e.g., `MEM FAULT` or `UNKNOWN OPCODE`).
 
-### 🖼️ Compatibility Gallery
+###  Compatibility Gallery
 The following titles have been verified for graphical accuracy and timing consistency across the automated test suite.
 
 | | |
