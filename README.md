@@ -1,6 +1,6 @@
 # CHIP-8 Go Runtime
 
-[![Build and Deploy WASM](https://github.com/YOUR_USERNAME/chip8-go-runtime/actions/workflows/deploy.yml/badge.svg)](https://github.com/YOUR_USERNAME/chip8-go-runtime/actions)
+[![Build and Deploy WASM](https://github.com/itsVinM/chip8-go-runtime/actions/workflows/deploy.yml/badge.svg)](https://github.com/YOUR_USERNAME/chip8-go-runtime/actions)
 
 
 A hardened, high-performance CHIP-8 execution environment written in Go. Featuring XOR rendering, an idiomatic table-driven test suite, and a specialized WebAssembly (WASM) distribution.
@@ -9,7 +9,7 @@ A hardened, high-performance CHIP-8 execution environment written in Go. Featuri
 ## How to Run
 
 ### Option A: Web (Instant)
-Visit the [Live Demo](https://YOUR_USERNAME.github.io/chip8-go-runtime/) to run the runtime directly in your browser via WebAssembly.
+Visit the [Live Demo](https://itsVinM.github.io/chip8-go-runtime/) to run the runtime directly in your browser via WebAssembly.
 
 ### Option B: Local Desktop
 ### Prerequisites
@@ -94,7 +94,7 @@ To assist in development and ROM analysis, a real-time debugger is integrated in
 * **Input Monitoring:** Visual feedback of the 16-key hex keypad state.
 * **Fault Reporting:** Immediate visual feedback in the UI when a CPU Halt is triggered, displaying the specific error (e.g., `MEM FAULT` or `UNKNOWN OPCODE`).
 
-###  Compatibility Gallery
+### Compatibility Gallery
 The following titles have been verified for graphical accuracy and timing consistency across the automated test suite.
 
 | | |
