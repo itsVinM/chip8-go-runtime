@@ -1,6 +1,6 @@
 # CHIP-8 Go Runtime
 
-[![Build and Deploy WASM](https://github.com/itsVinM/chip8-go-runtime/actions/workflows/deploy.yml/badge.svg)](https://github.com/YOUR_USERNAME/chip8-go-runtime/actions)
+[![Build and Deploy WASM](https://github.com/itsVinM/chip8-go-runtime/actions/workflows/deploy.yml/badge.svg)](https://github.com/itsVinM/chip8-go-runtime/actions)
 
 
 A hardened, high-performance CHIP-8 execution environment written in Go. Featuring XOR rendering, an idiomatic table-driven test suite, and a specialized WebAssembly (WASM) distribution.
