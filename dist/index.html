@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CHIP-8 Go Runtime</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: #888;
+            font-family: monospace;
+        }
+        canvas {
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border: 2px solid #333;
+        }
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading System Architecture...</div>
+    <script src="wasm_exec.js"></script>
+    <script>
+        if (!WebAssembly.instantiateStreaming) { 
+            // Polyfill for older browsers
+            WebAssembly.instantiateStreaming = async (resp, importObject) => {
+                const source = await (await resp).arrayBuffer();
+                return await WebAssembly.instantiate(source, importObject);
+            };
+        }
+
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+            document.getElementById("loading").style.display = "none";
+            go.run(result.instance);
+        }).catch((err) => {
+            console.error("WASM Load Failure:", err);
+            document.getElementById("loading").innerText = "Fault: Check Console";
+        });
+    </script>
+    <div class="controls">
+        [1][2][3][4] -> Keys: 1 2 3 4 <br>
+        [Q][W][E][R] -> Keys: 4 5 6 D <br>
+        [A][S][D][F] -> Keys: 7 8 9 E <br>
+        [Z][X][C][V] -> Keys: A 0 B F <br>
+        <b>P: Pause | N: Next ROM | Space: Step</b>
+    </div>
+</body>
+</html>
