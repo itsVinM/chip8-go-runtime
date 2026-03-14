@@ -55,12 +55,7 @@ func (cpu *Chip8) LoadROM(path string) error {
 		return err
 	}
 
-	for i := 0; i < len(data); i++ {
-		cpu.memory[0x200+i] = data[i]
-	}
-
-	cpu.pc = 0x200
-	return nil
+	return cpu.LoadFromBytes(data)
 }
 
 func (cpu *Chip8) LoadFromBytes(data []byte) error {
@@ -70,9 +65,7 @@ func (cpu *Chip8) LoadFromBytes(data []byte) error {
 		return fmt.Errorf("ROM too large: %d bytes (max %d)", len(data), 4096-offset)
 	}
 
-	// Reset CPU state before loading new ROM
 	cpu.pc = offset
-	// Copy bytes into memory starting at 0x200
 	copy(cpu.memory[offset:], data)
 	return nil
 }
