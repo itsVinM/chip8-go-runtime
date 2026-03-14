@@ -23,15 +23,11 @@ jobs:
       - name: Build 
         run: |
           mkdir -p dist
-        
           GOOS=js GOARCH=wasm go build -o dist/main.wasm main.go
-          
-          WASM_EXEC_PATH=$(go env GOROOT)/misc/wasm/wasm_exec.js
-          cp "$WASM_EXEC_PATH" dist/
-          
-          
+          curl -L https://raw.githubusercontent.com/golang/go/master/misc/wasm/wasm_exec.js -o dist/wasm_exec.js
           cp index.html dist/
-          cp -r rom dist/ || echo "No rom folder, skipping"
+          # Copy the rom folder (matches your Screenshot 22.14.57)
+          if [ -d "rom" ]; then cp -r rom dist/; fi
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
