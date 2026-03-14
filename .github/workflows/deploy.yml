@@ -22,23 +22,21 @@ jobs:
 
       - name: Build 🏗️
         run: |
-          # 1. Create a clean staging area
+          set -e
           mkdir -p stage
           
-          # 2. Build the WASM 
-          # Note: The 'rom' folder must exist in your repo for //go:embed to work
+          # Build WASM
           GOOS=js GOARCH=wasm go build -o stage/main.wasm main.go
           
-          # 3. Fetch the exact matching 1.24 glue script
+          # Get Glue Script
           curl -L https://raw.githubusercontent.com/golang/go/release-branch.go1.24/misc/wasm/wasm_exec.js -o stage/wasm_exec.js 
           
-          # 4. Copy your index.html
-          # Double-check: if your index.html is in the root, change this to: cp index.html stage/
+          # Copy HTML from dist
           cp dist/index.html stage/
           
-          # 5. List files for debugging (visible in Action logs)
+          # PROVE IT: This will print the files in the Action log
+          echo "Contents of deployment folder:"
           ls -R stage
-
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
