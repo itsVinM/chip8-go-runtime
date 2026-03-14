@@ -26,7 +26,7 @@ jobs:
           # 1. Build the WASM
           GOOS=js GOARCH=wasm go build -o stage/main.wasm main.go
           
-          curl -L https://raw.githubusercontent.com/golang/go/release-branch.go1.22/misc/wasm/wasm_exec.js -o staging/wasm_exec.js
+          curl -L https://raw.githubusercontent.com/golang/go/release-branch.go1.22/misc/wasm/wasm_exec.js -o stage/wasm_exec.js
           
           cp dist/index.html stage/
           cp -r rom stage/
