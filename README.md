@@ -100,6 +100,4 @@ The following titles have been verified for graphical accuracy and timing consis
 | | | |
 | :---: | :---: | :---: |
 | ![Space Invaders](statics/invaders.png) | ![Tetris](statics/tetris.png) | ![Tank](statics/tank.png) | ![Airplane](statics/airplane.png) | 
-| **Space Invaders** | **Tetris** | **Tank** |  **Airplane** 
-| ![Chip8-Logo](statics/logo.png) || ![HorseyJump](statics/horsey.png) | | ![Tombstone](statics/tombstontipp.png) |
-|  **Chip8 Logo** | **Horsey Jump** | **Tombstone** |
+| **Space Invaders** | **Tetris** | **Tank** |  **Airplane**  |
