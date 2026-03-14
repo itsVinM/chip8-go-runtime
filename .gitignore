@@ -1,4 +1,2 @@
 # Binaries
-!*.wasm
-!main
-
+dist/main.wasm
