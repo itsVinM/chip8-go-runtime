@@ -21,20 +21,15 @@ jobs:
           go-version: '1.22'
       - name: Build 🏗️
         run: |
-          # 1. Create a clean staging area
           mkdir -p staging
-          
-          # 2. Build the WASM (Airplane is now inside this)
+          # Build the WASM
           GOOS=js GOARCH=wasm go build -o staging/main.wasm main.go
           
-          # 3. Fetch the glue script
-          curl -L https://raw.githubusercontent.com/golang/go/master/misc/wasm/wasm_exec.js -o staging/wasm_exec.js
+          # USE THE SYSTEM FILE (Don't use curl)
+          cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" staging/
           
-          # 4. Copy YOUR index.html from its source location to staging
-          # Based on your tree, it is in 'dist/index.html'
+          # Copy assets
           cp dist/index.html staging/
-          
-          # 5. Copy the ROMs so the relative 'rom/' path works
           cp -r rom staging/
 
       - name: Deploy 🚀
