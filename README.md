@@ -97,7 +97,9 @@ To assist in development and ROM analysis, a real-time debugger is integrated in
 ### 🖼️ Compatibility Gallery
 The following titles have been verified for graphical accuracy and timing consistency across the automated test suite.
 
-| | | |
-| :---: | :---: | :---: |
-| ![Space Invaders](statics/invaders.png) | ![Tetris](statics/tetris.png) | ![Tank](statics/tank.png) | ![Airplane](statics/airplane.png) | 
-| **Space Invaders** | **Tetris** | **Tank** |  **Airplane**  |
+| | |
+| :---: | :---: | 
+| ![Space Invaders](statics/invaders.png) | ![Tetris](statics/tetris.png) | 
+| **Space Invaders** | **Tetris** | 
+|![Tank](statics/tank.png) | ![Airplane](statics/airplane.png) | 
+|**Tank** |  **Airplane**  |
