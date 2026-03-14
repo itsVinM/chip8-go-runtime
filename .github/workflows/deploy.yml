@@ -19,14 +19,17 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.22'
-
-      - name: Build 
+      - name: Build 🏗️
         run: |
-          mkdir -p dist
-          GOOS=js GOARCH=wasm go build -o dist/main.wasm main.go
-          curl -L https://raw.githubusercontent.com/golang/go/master/misc/wasm/wasm_exec.js -o dist/wasm_exec.js
-          cp index.html dist/ || echo "index.html not in root"
-          cp -r rom dist/ || echo "rom folder not found in root"
+          mkdir -p deploy_out
+          
+          GOOS=js GOARCH=wasm go build -o deploy_out/main.wasm main.go
+          
+          curl -L https://raw.githubusercontent.com/golang/go/master/misc/wasm/wasm_exec.js -o deploy_out/wasm_exec.js
+          
+          cp dist/index.html deploy_out/
+          
+          cp -r rom deploy_out/
       - name: Deploy 
         uses: JamesIves/github-pages-deploy-action@v4
         with:
