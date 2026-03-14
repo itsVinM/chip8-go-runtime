@@ -122,7 +122,7 @@
         };
 
         const go = new Go();
-        WebAssembly.instantiateStreaming(fetch("main.wasm?v=2"), go.importObject).then((result) => {
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
             document.getElementById("loading").remove(); 
             go.run(result.instance);
         }).catch((err) => {
