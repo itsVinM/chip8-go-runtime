@@ -23,14 +23,14 @@ jobs:
       - name: Build 🏗️
         run: |
           mkdir -p dist
-          # Build the binary using the code in root
+          # Force build a fresh binary
           GOOS=js GOARCH=wasm go build -o dist/main.wasm main.go
-          # Copy necessary assets into the dist folder
+          # Copy the WASM glue script
           cp $(go env GOROOT)/misc/wasm/wasm_exec.js dist/
+          # Copy your assets
           cp index.html dist/
-          # Copy the roms folder so the WASM can find them
-          cp -r rom dist/ || echo "No rom folder found, skipping copy"
-
+          # Copy the rom folder (ensure the name matches exactly!)
+          cp -r rom dist/
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
