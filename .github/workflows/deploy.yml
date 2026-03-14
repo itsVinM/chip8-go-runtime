@@ -1,32 +1,23 @@
-name: Build and Deploy WASM
-
-on:
-  push:
-    branches: [ main ] # Trigger on pushes to the main branch
-
-permissions:
-  contents: write # Allows the action to push to the gh-pages branch
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout 
         uses: actions/checkout@v4
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
-          go-version: '1.22' # Or your current Go version
+          go-version: '1.21' # Or your version
 
-      - name: Build WASM
+      - name: Build WASM 🏗️
         run: |
-          mkdir -p bin
-          GOOS=js GOARCH=wasm go build -o bin/main.wasm .
-          cp $(go env GOROOT)/lib/wasm/wasm_exec.js dist/
+          GOOS=js GOARCH=wasm go build -o dist/main.wasm main.go
+          # Copy the JS exec file too, just in case
+          cp $(go env GOROOT)/misc/wasm/wasm_exec.js dist/
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist 
-          branch: gh-pages # The branch where the website lives
+          folder: dist
+          branch: gh-pages
