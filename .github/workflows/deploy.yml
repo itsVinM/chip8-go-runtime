@@ -28,15 +28,10 @@ jobs:
           # Build WASM
           GOOS=js GOARCH=wasm go build -o stage/main.wasm main.go
           
-          # Get Glue Script
-          curl -L https://raw.githubusercontent.com/golang/go/release-branch.go1.24/misc/wasm/wasm_exec.js -o stage/wasm_exec.js 
+          # Use a DIFFERENT filename for the glue script to FORCE the browser to stop using the cached broken one
+          curl -L https://raw.githubusercontent.com/golang/go/release-branch.go1.24/misc/wasm/wasm_exec.js -o stage/wasm_glue_v1.js 
           
-          # Copy HTML from dist
           cp dist/index.html stage/
-          
-          # PROVE IT: This will print the files in the Action log
-          echo "Contents of deployment folder:"
-          ls -R stage
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
