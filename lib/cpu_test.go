@@ -141,28 +141,6 @@ func TestAllOpcodes(t *testing.T) {
 		})
 	}
 }
-func TestRealROMLoad(t *testing.T) {
-	cpu := New()
-	romPath := "../rom/tank.ch8"
-
-	// Skip the test if the file isn't there (so CI/CD doesn't fail)
-	if _, err := os.Stat(romPath); os.IsNotExist(err) {
-		t.Skipf("Skipping test: %s not found", romPath)
-	}
-
-	err := cpu.LoadROM(romPath)
-	if err != nil {
-		t.Fatalf("Failed to load real ROM: %v", err)
-	}
-
-	// Verify the first instruction is actually in memory
-	opcode := uint16(cpu.memory[0x200])<<8 | uint16(cpu.memory[0x201])
-	if opcode == 0 {
-		t.Error("Opcode at 0x200 is 0x0000; ROM might not have loaded correctly")
-	}
-
-	fmt.Printf("[Test] Successfully loaded %s. First opcode: %04X\n", romPath, opcode)
-}
 
 func TestROMCollection(t *testing.T) {
 	romDir := "../rom"
@@ -172,7 +150,6 @@ func TestROMCollection(t *testing.T) {
 	}
 
 	for _, file := range files {
-		// Only test .ch8 files
 		if file.IsDir() || !strings.HasSuffix(file.Name(), ".ch8") {
 			continue
 		}
@@ -181,11 +158,18 @@ func TestROMCollection(t *testing.T) {
 			cpu := New()
 			path := filepath.Join(romDir, file.Name())
 
-			if err := cpu.LoadROM(path); err != nil {
+			// FIX 1: Read the file to bytes HERE in the test
+			data, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatalf("Failed to read file: %v", err)
+			}
+
+			// FIX 2: Pass the BYTES, not the path
+			if err := cpu.LoadFromBytes(data); err != nil {
 				t.Fatalf("Failed to load: %v", err)
 			}
 
-			// Run for 500 cycles to check for stability
+			// Stability check (500 cycles)
 			for i := 0; i < 500; i++ {
 				cpu.Cycle()
 				if cpu.Halt {

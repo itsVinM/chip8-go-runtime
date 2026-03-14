@@ -9,7 +9,6 @@ package chip8
 import (
 	"fmt"
 	"math/rand/v2"
-	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -47,15 +46,6 @@ func (cpu *Chip8) UpdateTimers() {
 	if cpu.delayTimer > 0 {
 		cpu.delayTimer--
 	}
-}
-
-func (cpu *Chip8) LoadROM(path string) error {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
-
-	return cpu.LoadFromBytes(data)
 }
 
 func (cpu *Chip8) LoadFromBytes(data []byte) error {
