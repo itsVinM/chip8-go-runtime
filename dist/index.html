@@ -2,57 +2,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CHIP-8 Go Runtime</title>
     <style>
+        :root { --bg: #0f0f0f; --accent: #4ade80; --text: #a1a1aa; }
         body {
-            background: #1a1a1a;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            color: #888;
-            font-family: monospace;
+            overflow: hidden;
         }
+        /* Dashboard Container */
+        .status-bar {
+            width: 640px; /* Matches standard 10x upscale */
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #rom-name { color: var(--accent); font-weight: bold; }
+        
         canvas {
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            border: 2px solid #333;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+            border: 1px solid #333;
+            background: #000;
         }
-        .controls {
-            margin-top: 20px;
-            text-align: center;
-            line-height: 1.6;
+
+        .controls-grid {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            font-size: 11px;
+            opacity: 0.7;
+            border-top: 1px solid #222;
+            padding-top: 15px;
         }
+        b { color: #eee; }
     </style>
 </head>
 <body>
-    <div id="loading">Loading System Architecture...</div>
+    <div class="status-bar">
+        <span>System: <span id="rom-name">Initializing...</span></span>
+        <span>64x32 XOR Ops</span>
+    </div>
+
+    <div id="loading" style="position: absolute;">Loading WASM...</div>
+    
+    <div class="controls-grid">
+        <div>
+            <b>KEYS:</b> 1-4, Q-R, A-F, Z-V (Hex Keypad)
+        </div>
+        <div>
+            <b>P:</b> Pause | <b>N:</b> Next ROM | <b>Space:</b> Step
+        </div>
+    </div>
+
     <script src="wasm_exec.js"></script>
     <script>
-        if (!WebAssembly.instantiateStreaming) { 
-            // Polyfill for older browsers
-            WebAssembly.instantiateStreaming = async (resp, importObject) => {
-                const source = await (await resp).arrayBuffer();
-                return await WebAssembly.instantiate(source, importObject);
-            };
-        }
+        // Global hook for Go to call
+        window.updateRomName = (name) => {
+            document.getElementById("rom-name").innerText = name;
+        };
 
         const go = new Go();
         WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
             document.getElementById("loading").style.display = "none";
             go.run(result.instance);
         }).catch((err) => {
-            console.error("WASM Load Failure:", err);
+            console.error("WASM Failure:", err);
             document.getElementById("loading").innerText = "Fault: Check Console";
         });
     </script>
-    <div class="controls">
-        [1][2][3][4] -> Keys: 1 2 3 4 <br>
-        [Q][W][E][R] -> Keys: 4 5 6 D <br>
-        [A][S][D][F] -> Keys: 7 8 9 E <br>
-        [Z][X][C][V] -> Keys: A 0 B F <br>
-        <b>P: Pause | N: Next ROM | Space: Step</b>
-    </div>
 </body>
 </html>
