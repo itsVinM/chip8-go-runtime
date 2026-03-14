@@ -18,85 +18,29 @@ jobs:
       - name: Setup Go 🐹
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22'
-      name: Build and Deploy WASM
+          go-version: '1.24'
 
-on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: write
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🏁
-        uses: actions/checkout@v4
-
-      - name: Setup Go 🐹
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.24' 
-      name: Build and Deploy WASM
-
-on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: write
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🏁
-        uses: actions/checkout@v4
-
-      - name: Setup Go 🐹
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.22'
-      name: Build and Deploy WASM
-
-on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: write
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🏁
-        uses: actions/checkout@v4
-
-      - name: Setup Go 🐹
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.24' 
       - name: Build 🏗️
         run: |
+          # 1. Create a clean staging area
           mkdir -p stage
           
-          # 1. Build the WASM
+          # 2. Build the WASM 
+          # Note: The 'rom' folder must exist in your repo for //go:embed to work
           GOOS=js GOARCH=wasm go build -o stage/main.wasm main.go
           
+          # 3. Fetch the exact matching 1.24 glue script
           curl -L https://raw.githubusercontent.com/golang/go/release-branch.go1.24/misc/wasm/wasm_exec.js -o stage/wasm_exec.js 
+          
+          # 4. Copy your index.html
+          # Double-check: if your index.html is in the root, change this to: cp index.html stage/
           cp dist/index.html stage/
-          cp -r rom stage/
+          
+          # 5. List files for debugging (visible in Action logs)
+          ls -R stage
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: stage
           branch: gh-pages
-
- 
