@@ -22,13 +22,16 @@ jobs:
       - name: Build 🏗️
         run: |
           mkdir -p staging
-          # Build the WASM
+          
+          # 1. Build the WASM
           GOOS=js GOARCH=wasm go build -o staging/main.wasm main.go
           
-          # USE THE SYSTEM FILE (Don't use curl)
-          cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" staging/
+          # 2. Fetch the glue script directly from the Go source for 1.22
+          # This ensures version compatibility without hunting for local paths
+          curl -L https://raw.githubusercontent.com/golang/go/release-branch.go1.22/misc/wasm/wasm_exec.js -o staging/wasm_exec.js
           
-          # Copy assets
+          # 3. Copy your assets
+          # Make sure 'dist/index.html' actually exists in your repo
           cp dist/index.html staging/
           cp -r rom staging/
 
