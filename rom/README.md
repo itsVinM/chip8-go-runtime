@@ -1,0 +1,1 @@
+The ROMs in this folder are sourced from public domain archives from this repository (https://github.com/kripod/chip8-roms/tree/master/games)

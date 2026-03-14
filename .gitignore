@@ -1,0 +1,6 @@
+# Binaries
+*.wasm
+main
+# OS files
+.DS_Store
+
