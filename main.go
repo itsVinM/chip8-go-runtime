@@ -25,7 +25,7 @@ var availableROMs = []string{
 	"rom/brix.ch8",
 	"rom/invaders.ch8",
 	"rom/horseyjump.ch8",
-	"rom/airplane",
+	"rom/airplane.ch8",
 }
 
 const (
