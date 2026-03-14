@@ -26,6 +26,8 @@ var availableROMs = []string{
 	"rom/invaders.ch8",
 	"rom/horseyjump.ch8",
 	"rom/airplane.ch8",
+	"rom/pong.ch8",
+	"rom/ufo.ch8",
 }
 
 const (
