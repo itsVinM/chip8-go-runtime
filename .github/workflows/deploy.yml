@@ -20,17 +20,18 @@ jobs:
         with:
           go-version: '1.22'
 
-      - name: Build 🏗️
+      - name: Build 
         run: |
           mkdir -p dist
-          # Force build a fresh binary
+        
           GOOS=js GOARCH=wasm go build -o dist/main.wasm main.go
-          # Copy the WASM glue script
-          cp $(go env GOROOT)/misc/wasm/wasm_exec.js dist/
-          # Copy your assets
+          
+          WASM_EXEC_PATH=$(go env GOROOT)/misc/wasm/wasm_exec.js
+          cp "$WASM_EXEC_PATH" dist/
+          
+          
           cp index.html dist/
-          # Copy the rom folder (ensure the name matches exactly!)
-          cp -r rom dist/
+          cp -r rom dist/ || echo "No rom folder, skipping"
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
