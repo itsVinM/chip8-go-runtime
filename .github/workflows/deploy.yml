@@ -37,3 +37,4 @@ jobs:
         with:
           folder: stage
           branch: gh-pages
+          clean: true
