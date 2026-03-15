@@ -20,8 +20,8 @@ var romFiles embed.FS
 
 // List of available ROMs for the browser to cycle through
 var availableROMs = []string{
-	"rom/airplane.ch8",
 	"rom/chip8_logo.ch8",
+	"rom/airplane.ch8",
 	"rom/tank.ch8",
 	"rom/brix.ch8",
 	"rom/invaders.ch8",
