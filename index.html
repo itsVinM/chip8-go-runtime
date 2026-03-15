@@ -2,106 +2,136 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vincentius Workstation</title>
     <style>
-        :root { --bg: #000; --header-bg: #fff; --accent: #10b981; }
+        :root { 
+            --bg: #000000; 
+            --header-bg: #ffffff;
+            --accent: #10b981;
+            --border: #e5e7eb;
+        }
         
-        body { 
-            margin: 0; 
-            background: var(--bg); 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; /* Lock to screen height */
-            font-family: ui-monospace, Menlo, monospace; 
-            overflow: hidden; 
+        body {
+            background: var(--bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            font-family: ui-monospace, Menlo, monospace;
         }
 
-        /* 1. Header: Fixed Height */
-        .status-header { 
-            flex: 0 0 45px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 0 24px; 
-            background: var(--header-bg); 
-            font-size: 11px; 
-            font-weight: 800; 
-            z-index: 10;
+        /* 1. Header: High-Contrast Workstation Branding */
+        .status-header {
+            flex: 0 0 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 800;
         }
 
+        .brand-section { font-weight: 900; color: #000; }
         #rom-active { color: var(--accent); text-transform: uppercase; }
 
-        /* 2. Viewport: THE VOID KILLER */
-        .viewport { 
-            flex: 1; /* Takes ALL available space between header and footer */
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: #000; 
-            position: relative;
-            padding: 20px; /* Slight padding so it doesn't touch edges */
+        /* 2. Viewport: Kills the blank void by maximizing height */
+        .viewport {
+            flex: 1; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            padding: 10px;
         }
 
-        .screen-frame { 
-            /* This is the magic part: it fills height, and width follows the ratio */
-            height: 100%;
-            width: auto;
-            aspect-ratio: 2 / 1; 
+        .screen-frame {
+            height: 100%; 
+            max-height: calc(100vh - 160px); /* Balance height against the larger legend */
+            aspect-ratio: 2 / 1;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        canvas { 
-            width: 100% !important; 
-            height: 100% !important; 
-            image-rendering: pixelated; /* Keeps it sharp */
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            image-rendering: pixelated; /* Sharp blocks for Tetris */
         }
 
-        /* 3. Footer: Fixed Height Legend */
-        .technical-footer { 
-            flex: 0 0 140px; /* Precise height for your legend rows */
-            background: #0a0a0a; 
-            border-top: 1px solid #1a1a1a; 
-            padding: 15px 30px; 
-            display: flex; 
-            justify-content: space-between; 
+        /* 3. Footer: PC-Standard Legend + System Keys */
+        .technical-footer {
+            flex: 0 0 auto;
+            background: #0a0a0a;
+            border-top: 1px solid #1a1a1a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
-        .section-label { font-size: 9px; color: #555; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
-        .key-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; color: #888; }
-        .sys-key { color: #fff; font-weight: 800; background: #222; padding: 3px 8px; border-radius: 3px; min-width: 25px; text-align: center; border: 1px solid #333; }
+        .section-label {
+            font-size: 9px;
+            color: #555;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .legend-grid {
+            display: flex;
+            gap: 40px;
+        }
+
+        .key-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .sys-key {
+            color: #fff;
+            font-weight: 800;
+            background: #222;
+            padding: 2px 8px;
+            border-radius: 3px;
+            border: 1px solid #333;
+            min-width: 25px;
+            text-align: center;
+        }
+
         .highlight { color: var(--accent); font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <header class="status-header">
-        <div>VINCENTIUS WORKSTATION <span style="font-weight:400; color:#888; margin-left:8px;">CORE_V1.24</span></div>
-        <div>ROM: <span id="rom-active">BOOTING...</span></div>
-        <div>ENGINE: 64X32_XOR</div>
-    </header>
-
-    <main class="viewport">
-        <div class="screen-frame">
-            <canvas id="canvas"></canvas>
-        </div>
-    </main>
-
     <footer class="technical-footer">
-        <div>
-            <div class="section-label">PC Controls (Movement)</div>
-            <div class="key-row"><span class="sys-key">W</span> <span class="sys-key">↑</span> <span class="highlight">UP</span></div>
-            <div class="key-row"><span class="sys-key">A</span> <span class="sys-key">←</span> <span class="highlight">LEFT</span></div>
-            <div class="key-row"><span class="sys-key">S</span> <span class="sys-key">↓</span> <span class="highlight">DOWN</span></div>
-            <div class="key-row"><span class="sys-key">D</span> <span class="sys-key">→</span> <span class="highlight">RIGHT</span></div>
-        </div>
+        <div class="legend-grid">
+            <div>
+                <div class="brand-section">CHIP-8 Go Runtime <span style="font-weight:400; color:#888; margin-left:8px;">CORE_V1.24</span></div>
+                <div class="rom-tag">ROM: <span id="rom-active">BOOTING...</span></div>
+                <div>ENGINE: 64X32_XOR</div>
+            </div>
+            <div>
+                <div class="section-label">PC Controls (Movement)</div>
+                <div class="key-row"><span class="sys-key">W</span> <span class="sys-key">↑</span> <span class="highlight">UP</span></div>
+                <div class="key-row"><span class="sys-key">A</span> <span class="sys-key">←</span> <span class="highlight">LEFT</span></div>
+                <div class="key-row"><span class="sys-key">S</span> <span class="sys-key">↓</span> <span class="highlight">DOWN</span></div>
+                <div class="key-row"><span class="sys-key">D</span> <span class="sys-key">→</span> <span class="highlight">RIGHT</span></div>
+            </div>
 
-        <div>
-            <div class="section-label">Actions</div>
-            <div class="key-row"><span class="sys-key">SPACE</span> <span class="highlight">FIRE / ACTION</span></div>
-            <div class="key-row"><span class="sys-key">Q / E</span> <span>ALT ACTIONS</span></div>
+            <div>
+                <div class="section-label">Actions</div>
+                <div class="key-row"><span class="sys-key">SPACE</span> <span class="highlight">FIRE / ACTION</span></div>
+                <div class="key-row"><span class="sys-key">Q / E</span> <span>ALT ACTIONS</span></div>
+            </div>
         </div>
 
         <div>
