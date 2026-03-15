@@ -104,12 +104,12 @@ func (game *Game) nextROM() {
 	game.loadEmbeddedROM(availableROMs[currentRomIdx])
 }
 
-// Draw MUST have this exact signature to satisfy the ebiten.Game interface
 func (game *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 	white := color.RGBA{255, 255, 255, 255}
+	dim := color.RGBA{100, 100, 100, 255}
 
-	// --- Draw Game Screen ---
+	//Draw Game Screen ---
 	for y, row := range game.chip8.Video {
 		for x := 0; x < 64; x++ {
 			if (row>>(63-x))&1 == 1 {
@@ -118,30 +118,48 @@ func (game *Game) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	// --- Draw Debug Side Panel ---
+	//Side Panel Setup ---
 	debugX := gameWidth + 20
-	ebitenutil.DrawRect(screen, float64(gameWidth), 0, 2, float64(gameHeight), color.RGBA{50, 50, 50, 255})
+	// Vertical Divider
+	ebitenutil.DrawRect(screen, float64(gameWidth), 0, 2, float64(gameHeight), color.RGBA{30, 30, 30, 255})
 
 	status := "RUNNING"
 	if game.paused {
-		status = "PAUSED (SPACE to Step)"
+		status = "PAUSED"
 	}
 	ebitenutil.DebugPrintAt(screen, "STATUS: "+status, debugX, 10)
 
-	// Draw the Debugger (Internal access)
-	game.chip8.DrawDebugger(screen, debugX, 50, game.paused)
+	// Internal Debugger & Instructions ---
+	game.chip8.DrawDebugger(screen, debugX, 40, game.paused)
 
-	// Disassembler Output (Called on the chip8 instance)
 	asm := game.chip8.GetCurrentInstruction()
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("INST: %s", asm), debugX, 250)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("OP: %s", asm), debugX, 210)
 
-	// Visualize Keyboard state
-	ebitenutil.DebugPrintAt(screen, "KEYS:", debugX, 270)
+	// KEYBOARD LEGEND ---
+	ebitenutil.DrawRect(screen, float64(debugX), 235, 120, 1, dim) // Divider
+	ebitenutil.DebugPrintAt(screen, "CONTROLS", debugX, 245)
+
+	// Category: Hex Pad
+	ebitenutil.DebugPrintAt(screen, "HEX PAD:", debugX, 265)
+	ebitenutil.DebugPrintAt(screen, "1 2 3 4  ->  1 2 3 C", debugX, 280)
+	ebitenutil.DebugPrintAt(screen, "Q W E R  ->  4 5 6 D", debugX, 295)
+	ebitenutil.DebugPrintAt(screen, "A S D F  ->  7 8 9 E", debugX, 310)
+	ebitenutil.DebugPrintAt(screen, "Z X C V  ->  A 0 B F", debugX, 325)
+
+	// Category: System
+	ebitenutil.DebugPrintAt(screen, "SYSTEM:", debugX, 350)
+	ebitenutil.DebugPrintAt(screen, "N: NEXT ROM", debugX, 365)
+	ebitenutil.DebugPrintAt(screen, "P: PAUSE", debugX, 375)
+
+	if game.paused {
+		ebitenutil.DebugPrintAt(screen, "SPACE: STEP cycle", debugX, 385)
+	}
+
+	// Active Key Indicator
+	ebitenutil.DebugPrintAt(screen, "ACTIVE:", debugX, 405)
 	for i := 0; i < 16; i++ {
 		if game.chip8.Keypad[i] == 1 {
-			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%X", i), debugX+(i*15), 285)
-		} else {
-			ebitenutil.DebugPrintAt(screen, ".", debugX+(i*15), 300)
+			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("[%X]", i), debugX+(i*15), 420)
 		}
 	}
 }

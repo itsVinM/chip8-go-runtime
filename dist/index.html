@@ -2,72 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CHIP-8 Go Runtime</title>
+    <title>CHIP-8 Runtime Workstation</title>
     <style>
-        :root { --bg: #000; --accent: #10b981; --panel: #111; --dim: #555; }
-        body { margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; font-family: ui-monospace, monospace; }
-
-        header {
-            flex: 0 0 auto;
-            background: var(--panel);
-            border-bottom: 1px solid #222;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .status-box { font-size: 11px; color: #fff; font-weight: 800; min-width: 150px; }
-        .hl { color: var(--accent); }
-
-        /* The Original Hex Layout Legend */
-        .hex-legend { display: grid; grid-template-columns: repeat(4, auto); gap: 5px 15px; }
-        .key-row { display: flex; align-items: center; gap: 5px; font-size: 9px; color: var(--dim); }
-        .k-btn { color: #fff; font-weight: 800; background: #222; padding: 1px 5px; border-radius: 2px; border: 1px solid #333; min-width: 14px; text-align: center; }
-
-        .viewport { flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px; }
-        .screen-frame { height: 100%; aspect-ratio: 2 / 1; display: flex; align-items: center; justify-content: center; }
-        canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
+        body { margin: 0; background: #000; display: flex; height: 100vh; overflow: hidden; justify-content: center; align-items: center; }
+        /* Container matches Go Layout (768 + 300) x 384 */
+        .container { width: 1068px; height: 384px; }
+        canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; outline: none; }
     </style>
 </head>
-<body>
-
-    <header>
-        <div class="status-box">
-            <div>CHIP-8 <span class="hl">RUNTIME</span></div>
-            <div>ROM: <span id="rom-active" class="hl">ACTIVE</span></div>
-        </div>
-
-        <div class="hex-legend">
-            <div class="key-row"><span class="k-btn">1 2 3 4</span><span>HEX 1-C</span></div>
-            <div class="key-row"><span class="k-btn">Q W E R</span><span>HEX 4-D</span></div>
-            <div class="key-row"><span class="k-btn">A S D F</span><span>HEX 7-E</span></div>
-            <div class="key-row"><span class="k-btn">Z X C V</span><span>HEX A-F</span></div>
-        </div>
-
-        <div class="status-box" style="text-align: right;">
-            <div class="key-row"><span class="k-btn">P</span> PAUSE</div>
-            <div class="key-row"><span class="k-btn">N</span> <span class="hl">NEXT ROM</span></div>
-        </div>
-    </header>
-
-    <main class="viewport">
-        <div class="screen-frame"><canvas id="canvas"></canvas></div>
-    </main>
-
+<body onclick="document.getElementById('canvas').focus()">
+    <div class="container">
+        <canvas id="canvas" tabindex="1"></canvas>
+    </div>
     <script src="wasm_glue_v1.js"></script>
     <script>
-        window.updateRomName = (name) => {
-            const el = document.getElementById("rom-active");
-            if (el) el.innerText = name.replace('.ch8', '').toUpperCase();
-        };
-
-        {
+        (function() {
             const go = new Go();
-            WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
-                go.run(result.instance);
+            WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((res) => {
+                go.run(res.instance);
+                document.getElementById('canvas').focus();
             });
-        }
+        })();
     </script>
 </body>
 </html>
