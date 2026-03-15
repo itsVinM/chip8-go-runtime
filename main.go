@@ -43,10 +43,29 @@ type Game struct {
 }
 
 var keyMap = map[ebiten.Key]uint8{
-	ebiten.Key1: 0x1, ebiten.Key2: 0x2, ebiten.Key3: 0x3, ebiten.Key4: 0xC,
-	ebiten.KeyQ: 0x4, ebiten.KeyW: 0x5, ebiten.KeyE: 0x6, ebiten.KeyR: 0xD,
-	ebiten.KeyA: 0x7, ebiten.KeyS: 0x8, ebiten.KeyD: 0x9, ebiten.KeyF: 0xE,
-	ebiten.KeyZ: 0xA, ebiten.KeyX: 0x0, ebiten.KeyC: 0xB, ebiten.KeyV: 0xF,
+	// Row 1
+	ebiten.Key1: 0x1, // Left
+	ebiten.Key2: 0x2, // Up (Commonly used for Movement)
+	ebiten.Key3: 0x3, // Right
+	ebiten.Key4: 0xC, // Function C
+
+	// Row 2
+	ebiten.KeyQ: 0x4, // Left (Standard Movement)
+	ebiten.KeyW: 0x5, // Action / Fire (Standard Action)
+	ebiten.KeyE: 0x6, // Right (Standard Movement)
+	ebiten.KeyR: 0xD, // Function D
+
+	// Row 3
+	ebiten.KeyA: 0x7, // Player 2 Up
+	ebiten.KeyS: 0x8, // Down (Standard Movement)
+	ebiten.KeyD: 0x9, // Player 2 Down
+	ebiten.KeyF: 0xE, // Function E
+
+	// Row 4
+	ebiten.KeyZ: 0xA, // Function A
+	ebiten.KeyX: 0x0, // 0 / Modifier
+	ebiten.KeyC: 0xB, // Function B
+	ebiten.KeyV: 0xF, // Function F (Restart/Special)
 }
 
 func (game *Game) Update() error {
