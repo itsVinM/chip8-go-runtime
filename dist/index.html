@@ -4,27 +4,28 @@
     <meta charset="UTF-8">
     <title>CHIP-8 Go Runtime</title>
     <style>
-        :root { --bg: #000; --accent: #10b981; --panel: #0a0a0a; --dim: #666; }
+        :root { --bg: #000; --accent: #10b981; --panel: #111; --dim: #555; }
         body { margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; font-family: ui-monospace, monospace; }
 
         header {
             flex: 0 0 auto;
             background: var(--panel);
             border-bottom: 1px solid #222;
-            padding: 10px 25px;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .status-box { font-size: 10px; font-weight: 800; color: #fff; display: flex; gap: 20px; }
+        .status-box { font-size: 11px; color: #fff; font-weight: 800; min-width: 150px; }
         .hl { color: var(--accent); }
 
-        .legend-bar { display: flex; gap: 15px; align-items: center; }
+        /* The Original Hex Layout Legend */
+        .hex-legend { display: grid; grid-template-columns: repeat(4, auto); gap: 5px 15px; }
         .key-row { display: flex; align-items: center; gap: 5px; font-size: 9px; color: var(--dim); }
-        .k-btn { color: #fff; font-weight: 800; background: #1a1a1a; padding: 1px 5px; border-radius: 2px; border: 1px solid #333; min-width: 15px; text-align: center; }
+        .k-btn { color: #fff; font-weight: 800; background: #222; padding: 1px 5px; border-radius: 2px; border: 1px solid #333; min-width: 14px; text-align: center; }
 
-        .viewport { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; padding: 10px; }
+        .viewport { flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px; }
         .screen-frame { height: 100%; aspect-ratio: 2 / 1; display: flex; align-items: center; justify-content: center; }
         canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
     </style>
@@ -33,15 +34,18 @@
 
     <header>
         <div class="status-box">
-            <div>CHIP-8 <span class="hl">GO RUNTIME</span></div>
-            <div>ROM: <span id="rom-active" class="hl">BOOTING...</span></div>
-            <div style="color:var(--dim)">CORE_V1.24</div>
+            <div>CHIP-8 <span class="hl">RUNTIME</span></div>
+            <div>ROM: <span id="rom-active" class="hl">ACTIVE</span></div>
         </div>
 
-        <div class="legend-bar">
-            <div class="key-row"><span class="k-btn">W/S/A/D</span> <span class="hl">MOVE</span></div>
-            <div class="key-row"><span class="k-btn">SPACE</span> <span class="hl">FIRE</span></div>
-            <div style="width: 1px; height: 12px; background: #333;"></div>
+        <div class="hex-legend">
+            <div class="key-row"><span class="k-btn">1 2 3 4</span><span>HEX 1-C</span></div>
+            <div class="key-row"><span class="k-btn">Q W E R</span><span>HEX 4-D</span></div>
+            <div class="key-row"><span class="k-btn">A S D F</span><span>HEX 7-E</span></div>
+            <div class="key-row"><span class="k-btn">Z X C V</span><span>HEX A-F</span></div>
+        </div>
+
+        <div class="status-box" style="text-align: right;">
             <div class="key-row"><span class="k-btn">P</span> PAUSE</div>
             <div class="key-row"><span class="k-btn">N</span> <span class="hl">NEXT ROM</span></div>
         </div>
@@ -58,7 +62,6 @@
             if (el) el.innerText = name.replace('.ch8', '').toUpperCase();
         };
 
-        // Fix: Use a block to avoid redeclaration of 'go'
         {
             const go = new Go();
             WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {

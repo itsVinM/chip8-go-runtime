@@ -43,20 +43,11 @@ type Game struct {
 }
 
 var keyMap = map[ebiten.Key]uint8{
-	// --- PC MOVEMENT (Mapped to standard Hex 1, 4, 7, 9) ---
-	ebiten.KeyW: 0x1, ebiten.KeyUp: 0x1, // UP
-	ebiten.KeyS: 0x4, ebiten.KeyDown: 0x4, // DOWN
-	ebiten.KeyA: 0x7, ebiten.KeyLeft: 0x7, // LEFT
-	ebiten.KeyD: 0x9, ebiten.KeyRight: 0x9, // RIGHT
 
-	// --- PC ACTIONS ---
-	ebiten.KeySpace: 0x5, // FIRE / SELECT
-	ebiten.KeyQ:     0x2, // ALT 1
-	ebiten.KeyE:     0x3, // ALT 2
-
-	// --- SYSTEM RESERVED (Do not map these to Hex) ---
-	ebiten.KeyP: 0xEE, // PAUSE
-	ebiten.KeyN: 0xFF, // NEXT ROM
+	ebiten.Key1: 0x1, ebiten.Key2: 0x2, ebiten.Key3: 0x3, ebiten.Key4: 0xC,
+	ebiten.KeyQ: 0x4, ebiten.KeyW: 0x5, ebiten.KeyE: 0x6, ebiten.KeyR: 0xD,
+	ebiten.KeyA: 0x7, ebiten.KeyS: 0x8, ebiten.KeyD: 0x9, ebiten.KeyF: 0xE,
+	ebiten.KeyZ: 0xA, ebiten.KeyX: 0x0, ebiten.KeyC: 0xB, ebiten.KeyV: 0xF,
 }
 
 func (game *Game) Update() error {
