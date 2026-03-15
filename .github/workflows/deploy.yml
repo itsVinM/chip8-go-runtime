@@ -25,7 +25,7 @@ jobs:
           set -e
           mkdir -p stage
           GOOS=js GOARCH=wasm go build -o stage/main.wasm main.go
-          curl -f -L https://raw.githubusercontent.com/golang/go/refs/heads/master/misc/wasm/wasm_exec.js -o stage/wasm_glue_v1.js
+          cp $(go env GOROOT)/misc/wasm/wasm_exec.js stage/wasm_glue_v1.js
           cp dist/index.html stage/
           touch stage/.nojekyll
           ls -lh stage/
