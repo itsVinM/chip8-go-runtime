@@ -25,7 +25,11 @@ jobs:
           set -e
           mkdir -p stage
           GOOS=js GOARCH=wasm go build -o stage/main.wasm main.go
-          cp $(go env GOROOT)/misc/wasm/wasm_exec.js stage/wasm_glue_v1.js
+          
+          # This finds the wasm_exec.js regardless of where the runner put it
+          WASM_EXEC_PATH=$(find $(go env GOROOT) -name "wasm_exec.js" | head -n 1)
+          cp "$WASM_EXEC_PATH" stage/wasm_glue_v1.js
+          
           cp dist/index.html stage/
           touch stage/.nojekyll
           ls -lh stage/
@@ -33,6 +37,6 @@ jobs:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: stage
+          folder: dist
           branch: gh-pages
           clean: true
