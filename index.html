@@ -3,57 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vincentius CHIP-8</title>
+    <title>Vincentius Workstation</title>
     <style>
         :root { 
-            --bg: #050505; 
+            --bg: #000000; 
             --header-bg: #ffffff;
             --accent: #10b981;
             --border: #e5e7eb;
-            --text-dim: #6b7280;
         }
         
         body {
             background: var(--bg);
-            color: #111827;
-            font-family: ui-monospace, Menlo, monospace;
+            margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            margin: 0;
             overflow: hidden;
+            font-family: ui-monospace, Menlo, monospace;
         }
 
-        /* Pro Header: Branding + Dynamic Rom Name */
+        /* 1. Header: High-Contrast Workstation Branding */
         .status-header {
-            flex: 0 0 auto;
+            flex: 0 0 45px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 24px;
+            padding: 0 24px;
             background: var(--header-bg);
             border-bottom: 1px solid var(--border);
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 800;
         }
 
-        .brand-section { display: flex; gap: 12px; align-items: center; }
-        .brand-name { font-weight: 900; color: #000; letter-spacing: -0.02em; }
-        .sys-ver { color: var(--text-dim); font-weight: 400; font-size: 10px; }
-
-        .rom-tag {
-            background: #f9fafb;
-            padding: 4px 12px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-        }
-        
+        .brand-section { font-weight: 900; color: #000; }
         #rom-active { color: var(--accent); text-transform: uppercase; }
-        .label { color: var(--text-dim); font-weight: 400; margin-right: 4px; }
 
-        /* Viewport: Reclaims the space for the Game */
+        /* 2. Viewport: Kills the blank void by maximizing height */
         .viewport {
-            flex: 1; /* Takes almost all screen space */
+            flex: 1; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -62,49 +49,73 @@
         }
 
         .screen-frame {
-            width: 100%;
-            max-width: 1200px;
+            height: 100%; 
+            max-height: calc(100vh - 160px); /* Balance height against the larger legend */
             aspect-ratio: 2 / 1;
-            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         canvas {
             width: 100% !important;
             height: 100% !important;
-            image-rendering: pixelated; /* Sharp pixels for Test Suite */
+            image-rendering: pixelated; /* Sharp blocks for Tetris */
         }
 
-        /* Minimal Key Legend Footer */
-        .compact-footer {
+        /* 3. Footer: PC-Standard Legend + System Keys */
+        .technical-footer {
             flex: 0 0 auto;
-            background: #111;
-            padding: 10px 24px;
+            background: #0a0a0a;
+            border-top: 1px solid #1a1a1a;
+            padding: 15px 30px;
             display: flex;
-            justify-content: center;
-            gap: 30px;
-            border-top: 1px solid #222;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
-        .legend-group { font-size: 10px; color: #888; display: flex; gap: 6px; align-items: center; }
-        .key-tag { color: #fff; font-weight: 800; padding: 1px 4px; background: #333; border-radius: 2px; }
+        .section-label {
+            font-size: 9px;
+            color: #555;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .legend-grid {
+            display: flex;
+            gap: 40px;
+        }
+
+        .key-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .sys-key {
+            color: #fff;
+            font-weight: 800;
+            background: #222;
+            padding: 2px 8px;
+            border-radius: 3px;
+            border: 1px solid #333;
+            min-width: 25px;
+            text-align: center;
+        }
+
+        .highlight { color: var(--accent); font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header class="status-header">
-        <div class="brand-section">
-            <span class="brand-name">VINCENTIUS WORKSTATION</span>
-            <span class="sys-ver">CORE_V1.24</span>
-        </div>
-
-        <div class="rom-tag">
-            <span class="label">ROM:</span>
-            <span id="rom-active">BOOTING...</span>
-        </div>
-
-        <div class="engine-info">
-            <span class="label">ENGINE:</span> 64X32_XOR
-        </div>
+        <div class="brand-section">VINCENTIUS WORKSTATION <span style="font-weight:400; color:#888; margin-left:8px;">CORE_V1.24</span></div>
+        <div class="rom-tag">ROM: <span id="rom-active">BOOTING...</span></div>
+        <div>ENGINE: 64X32_XOR</div>
     </header>
 
     <main class="viewport">
@@ -113,24 +124,33 @@
         </div>
     </main>
 
-    <footer class="compact-footer">
-        <div class="legend-group">
-            <span>MOV:</span>
-            <span><span class="key-tag">2</span> UP</span>
-            <span><span class="key-tag">Q</span> LEFT</span>
-            <span><span class="key-tag">E</span> RIGHT</span>
-            <span><span class="key-tag">S</span> DOWN</span>
+    <footer class="technical-footer">
+        <div class="legend-grid">
+            <div>
+                <div class="section-label">PC Controls (Movement)</div>
+                <div class="key-row"><span class="sys-key">W</span> <span class="sys-key">↑</span> <span class="highlight">UP</span></div>
+                <div class="key-row"><span class="sys-key">A</span> <span class="sys-key">←</span> <span class="highlight">LEFT</span></div>
+                <div class="key-row"><span class="sys-key">S</span> <span class="sys-key">↓</span> <span class="highlight">DOWN</span></div>
+                <div class="key-row"><span class="sys-key">D</span> <span class="sys-key">→</span> <span class="highlight">RIGHT</span></div>
+            </div>
+
+            <div>
+                <div class="section-label">Actions</div>
+                <div class="key-row"><span class="sys-key">SPACE</span> <span class="highlight">FIRE / ACTION</span></div>
+                <div class="key-row"><span class="sys-key">Q / E</span> <span>ALT ACTIONS</span></div>
+            </div>
         </div>
-        <div class="legend-group">
-            <span>ACTION:</span>
-            <span><span class="key-tag">W</span> FIRE</span>
-            <span><span class="key-tag">1-4 / A-V</span> HEX_KEYS</span>
+
+        <div>
+            <div class="section-label">System Commands</div>
+            <div class="key-row"><span class="sys-key">P</span> <span>PAUSE ENGINE</span></div>
+            <div class="key-row"><span class="sys-key">N</span> <span>CYCLE ROM (NEXT)</span></div>
+            <div class="key-row"><span class="sys-key">ESC</span> <span>EXIT WORKSTATION</span></div>
         </div>
     </footer>
 
     <script src="wasm_glue_v1.js"></script>
     <script>
-        // Update ROM name dynamically from Go
         window.updateRomName = (name) => {
             const el = document.getElementById("rom-active");
             if (el) el.innerText = name.replace('.ch8', '').toUpperCase();
