@@ -43,20 +43,22 @@ type Game struct {
 }
 
 var keyMap = map[ebiten.Key]uint8{
-	// --- PC STANDARD DIRECTIONALS ---
-	ebiten.KeyW: 0x1, ebiten.KeyUp: 0x1, // UP (Hex 1)
-	ebiten.KeyS: 0x4, ebiten.KeyDown: 0x4, // DOWN (Hex 4)
-	ebiten.KeyA: 0x7, ebiten.KeyLeft: 0x7, // LEFT (Hex 7)
-	ebiten.KeyD: 0x9, ebiten.KeyRight: 0x9, // RIGHT (Hex 9)
+	// --- STANDARD HEX PAD (Original 16 Keys) ---
+	ebiten.Key1: 0x1, ebiten.Key2: 0x2, ebiten.Key3: 0x3, ebiten.Key4: 0xC,
+	ebiten.KeyQ: 0x4, ebiten.KeyW: 0x5, ebiten.KeyE: 0x6, ebiten.KeyR: 0xD,
+	ebiten.KeyA: 0x7, ebiten.KeyS: 0x8, ebiten.KeyD: 0x9, ebiten.KeyF: 0xE,
+	ebiten.KeyZ: 0xA, ebiten.KeyX: 0x0, ebiten.KeyC: 0xB, ebiten.KeyV: 0xF,
 
-	// --- ACTIONS & UTILITY ---
-	ebiten.KeySpace: 0x5, // FIRE/ACTION (Hex 5)
-	ebiten.KeyQ:     0x4, // ROTATE/ALT (Hex 4)
-	ebiten.KeyE:     0x6, // ALT ACTION (Hex 6)
+	// --- PC OVERLAYS (Directionals) ---
+	ebiten.KeyUp:    0x2, // Map to Hex 2 (UP)
+	ebiten.KeyLeft:  0x4, // Map to Hex 4 (LEFT)
+	ebiten.KeyDown:  0x8, // Map to Hex 8 (DOWN)
+	ebiten.KeyRight: 0x6, // Map to Hex 6 (RIGHT)
+	ebiten.KeySpace: 0x5, // Map to Hex 5 (FIRE/ACTION)
 
-	// --- SYSTEM (handled in Update loop) ---
-	ebiten.KeyP: 0xEE, // PAUSE
-	ebiten.KeyN: 0xFF, // NEXT ROM
+	// --- SYSTEM ---
+	ebiten.KeyP: 0xEE, // Reserved for Pause
+	ebiten.KeyN: 0xFF, // Reserved for Next ROM
 }
 
 func (game *Game) Update() error {
