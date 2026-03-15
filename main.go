@@ -43,29 +43,20 @@ type Game struct {
 }
 
 var keyMap = map[ebiten.Key]uint8{
-	// Row 1
-	ebiten.Key1: 0x1, // Left
-	ebiten.Key2: 0x2, // Up (Commonly used for Movement)
-	ebiten.Key3: 0x3, // Right
-	ebiten.Key4: 0xC, // Function C
+	// --- DIRECTIONAL CLUSTER (WASD + ARROWS) ---
+	ebiten.KeyW: 0x2, ebiten.KeyUp: 0x2, // UP
+	ebiten.KeyA: 0x4, ebiten.KeyLeft: 0x4, // LEFT
+	ebiten.KeyS: 0x8, ebiten.KeyDown: 0x8, // DOWN
+	ebiten.KeyD: 0x6, ebiten.KeyRight: 0x6, // RIGHT
 
-	// Row 2
-	ebiten.KeyQ: 0x4, // Left (Standard Movement)
-	ebiten.KeyW: 0x5, // Action / Fire (Standard Action)
-	ebiten.KeyE: 0x6, // Right (Standard Movement)
-	ebiten.KeyR: 0xD, // Function D
+	// --- PRIMARY ACTIONS ---
+	ebiten.KeySpace: 0x5, // FIRE / SELECT (Standard PC Action)
+	ebiten.KeyE:     0x6, // Secondary Action
+	ebiten.KeyQ:     0x4, // Tertiary Action / Rotate
 
-	// Row 3
-	ebiten.KeyA: 0x7, // Player 2 Up
-	ebiten.KeyS: 0x8, // Down (Standard Movement)
-	ebiten.KeyD: 0x9, // Player 2 Down
-	ebiten.KeyF: 0xE, // Function E
-
-	// Row 4
-	ebiten.KeyZ: 0xA, // Function A
-	ebiten.KeyX: 0x0, // 0 / Modifier
-	ebiten.KeyC: 0xB, // Function B
-	ebiten.KeyV: 0xF, // Function F (Restart/Special)
+	// --- SYSTEM CONTROLS (Non-Hex) ---
+	ebiten.KeyP: 0xEE, // Reserved for Pause logic
+	ebiten.KeyN: 0xFF, // Reserved for Next ROM logic
 }
 
 func (game *Game) Update() error {
