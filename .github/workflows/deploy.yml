@@ -12,10 +12,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🏁
+      - name: Checkout 
         uses: actions/checkout@v4
 
-      - name: Setup Go 🐹
+      - name: Setup Go 
         uses: actions/setup-go@v4
         with:
           go-version: '1.24'
@@ -24,15 +24,12 @@ jobs:
         run: |
           set -e
           mkdir -p stage
-          
-          # Build WASM
           GOOS=js GOARCH=wasm go build -o stage/main.wasm main.go
-          
-          # Use a DIFFERENT filename for the glue script to FORCE the browser to stop using the cached broken one
-          curl -L https://raw.githubusercontent.com/golang/go/release-branch.go1.24/misc/wasm/wasm_exec.js -o stage/wasm_glue_v1.js 
-          
-          cp dist/index.html stage/
-      - name: Deploy 🚀
+          curl -f -L https://raw.githubusercontent.com/golang/go/release-branch.go1.24/misc/wasm/wasm_exec.js -o stage/wasm_glue_v1.js
+          cp dist/index.html stage/   
+          touch stage/.nojekyll
+          ls -lh stage/
+      - name: Deploy 
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: stage
