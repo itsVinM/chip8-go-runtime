@@ -1,189 +1,146 @@
-package main
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHIP-8 Workstation</title>
+    <style>
+        :root { 
+            --bg: #050505; 
+            --header-bg: #ffffff;
+            --accent: #22c55e;
+            --border: #e5e7eb;
+            --text-dim: #6b7280;
+        }
+        
+        body {
+            background: var(--bg);
+            color: #111827;
+            font-family: ui-monospace, 'Cascadia Code', Menlo, monospace;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
 
-import (
-	chip8 "chip8/lib"
-	"embed" // Import embed
-	"fmt"
-	"image/color"
-	"log"
+        /* Top Status Bar: Branding + Dynamic ROM */
+        .status-header {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 700;
+        }
 
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
-)
+        .brand-section { display: flex; gap: 12px; align-items: center; }
+        .brand-name { font-weight: 900; color: #000; letter-spacing: -0.02em; }
+        .sys-ver { color: var(--text-dim); font-weight: 400; font-size: 10px; }
 
-// 1. Embed the roms folder into the binary
-// Make sure your folder is named 'rom' and is in the same directory as main.go
-//
-//go:embed rom/*.ch8
-var romFiles embed.FS
+        .rom-section {
+            background: #f9fafb;
+            padding: 4px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        
+        .label { color: var(--text-dim); font-weight: 400; margin-right: 6px; }
+        #rom-active { color: var(--accent); text-transform: uppercase; }
 
-// List of available ROMs for the browser to cycle through
-var availableROMs = []string{
-	"rom/chip8_logo.ch8",
-	"rom/airplane.ch8",
-	"rom/tank.ch8",
-	"rom/brix.ch8",
-	"rom/invaders.ch8",
-	"rom/horseyjump.ch8",
-	"rom/pong.ch8",
-	"rom/ufo.ch8",
-}
+        /* Main Viewport: Reclaiming Vertical Space */
+        .viewport {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            padding: 20px;
+        }
 
-const (
-	scale      = 12
-	gameWidth  = 64 * scale
-	gameHeight = 32 * scale
-	debugWidth = 300
-)
+        .screen-frame {
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 2 / 1;
+            background: #000;
+            box-shadow: 0 0 60px rgba(0,0,0,0.5);
+        }
 
-type Game struct {
-	chip8  *chip8.Chip8
-	paused bool // Changed from 'mode' to 'paused' to match your Update logic
-}
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            image-rendering: pixelated;
+        }
 
-var keyMap = map[ebiten.Key]uint8{
-	// Row 1
-	ebiten.Key1: 0x1, // Left
-	ebiten.Key2: 0x2, // Up (Commonly used for Movement)
-	ebiten.Key3: 0x3, // Right
-	ebiten.Key4: 0xC, // Function C
+        /* Compact Footer Legend */
+        .compact-footer {
+            flex: 0 0 auto;
+            background: #111;
+            padding: 10px 24px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            border-top: 1px solid #222;
+        }
 
-	// Row 2
-	ebiten.KeyQ: 0x4, // Left (Standard Movement)
-	ebiten.KeyW: 0x5, // Action / Fire (Standard Action)
-	ebiten.KeyE: 0x6, // Right (Standard Movement)
-	ebiten.KeyR: 0xD, // Function D
+        .legend-item { font-size: 10px; color: #888; display: flex; gap: 8px; }
+        .key-tag { color: #fff; font-weight: 800; border-bottom: 1px solid #444; }
+    </style>
+</head>
+<body>
 
-	// Row 3
-	ebiten.KeyA: 0x7, // Player 2 Up
-	ebiten.KeyS: 0x8, // Down (Standard Movement)
-	ebiten.KeyD: 0x9, // Player 2 Down
-	ebiten.KeyF: 0xE, // Function E
+    <header class="status-header">
+        <div class="brand-section">
+            <span class="brand-name">CHIP-8 WORKSTATION</span>
+            <span class="sys-ver">SYS: CORE_V1.24</span>
+        </div>
 
-	// Row 4
-	ebiten.KeyZ: 0xA, // Function A
-	ebiten.KeyX: 0x0, // 0 / Modifier
-	ebiten.KeyC: 0xB, // Function B
-	ebiten.KeyV: 0xF, // Function F (Restart/Special)
-}
+        <div class="rom-section">
+            <span class="label">ROM_LOADED:</span>
+            <span id="rom-active">INITIALIZING...</span>
+        </div>
 
-func (game *Game) Update() error {
-	// Input Polling
-	for i := range game.chip8.Keypad {
-		game.chip8.Keypad[i] = 0
-	}
-	for ebKey, chip8Val := range keyMap {
-		if ebiten.IsKeyPressed(ebKey) {
-			game.chip8.Keypad[chip8Val] = 1
-		}
-	}
+        <div class="engine-section">
+            <span class="label">ENGINE:</span> 64X32_XOR
+        </div>
+    </header>
 
-	// Toggle Pause
-	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
-		game.paused = !game.paused
-	}
+    <main class="viewport">
+        <div class="screen-frame">
+            <canvas id="canvas"></canvas>
+        </div>
+    </main>
 
-	// Step forward one cycle (Your exact logic)
-	if game.paused && inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		game.chip8.Cycle()
-	}
+    <footer class="compact-footer">
+        <div class="legend-item">
+            <span>MOVE:</span>
+            <span><span class="key-tag">2</span> UP</span>
+            <span><span class="key-tag">Q</span> LEFT</span>
+            <span><span class="key-tag">E</span> RIGHT</span>
+            <span><span class="key-tag">S</span> DOWN</span>
+        </div>
+        <div class="legend-item">
+            <span>ACTION:</span>
+            <span><span class="key-tag">W</span> FIRE</span>
+            <span><span class="key-tag">1-4</span> / <span class="key-tag">A-V</span> HEX_BUS</span>
+        </div>
+    </footer>
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyN) {
-		game.nextROM()
-	}
-	// Normal execution
-	if !game.paused {
-		// Professional tip: Run 10 cycles here so the game isn't 10x slow
-		for i := 0; i < 10; i++ {
-			game.chip8.Cycle()
-		}
-	}
+    <script src="wasm_glue_v1.js"></script>
+    <script>
+        // Go Bridge
+        window.updateRomName = (name) => {
+            const el = document.getElementById("rom-active");
+            if (el) el.innerText = name.replace('.ch8', '').toUpperCase();
+        };
 
-	// Update Timers at 60Hz
-	game.chip8.UpdateTimers()
-
-	return nil
-}
-func (game *Game) loadEmbeddedROM(path string) {
-	data, err := romFiles.ReadFile(path)
-	if err != nil {
-		log.Printf("Failed to read embedded ROM: %v", err)
-		return
-	}
-	game.chip8.LoadFromBytes(data)
-}
-
-var currentRomIdx = 0
-
-func (game *Game) nextROM() {
-	currentRomIdx = (currentRomIdx + 1) % len(availableROMs)
-	game.chip8 = chip8.New() // Reset CPU
-	game.loadEmbeddedROM(availableROMs[currentRomIdx])
-}
-
-// Draw MUST have this exact signature to satisfy the ebiten.Game interface
-func (game *Game) Draw(screen *ebiten.Image) {
-	screen.Fill(color.Black)
-	white := color.RGBA{255, 255, 255, 255}
-
-	// --- Draw Game Screen ---
-	for y, row := range game.chip8.Video {
-		for x := 0; x < 64; x++ {
-			if (row>>(63-x))&1 == 1 {
-				ebitenutil.DrawRect(screen, float64(x*scale), float64(y*scale), scale, scale, white)
-			}
-		}
-	}
-
-	// --- Draw Debug Side Panel ---
-	debugX := gameWidth + 20
-	ebitenutil.DrawRect(screen, float64(gameWidth), 0, 2, float64(gameHeight), color.RGBA{50, 50, 50, 255})
-
-	status := "RUNNING"
-	if game.paused {
-		status = "PAUSED (SPACE to Step)"
-	}
-	ebitenutil.DebugPrintAt(screen, "STATUS: "+status, debugX, 10)
-
-	// Draw the Debugger (Internal access)
-	game.chip8.DrawDebugger(screen, debugX, 50, game.paused)
-
-	// Disassembler Output (Called on the chip8 instance)
-	asm := game.chip8.GetCurrentInstruction()
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("INST: %s", asm), debugX, 250)
-
-	// Visualize Keyboard state
-	ebitenutil.DebugPrintAt(screen, "KEYS:", debugX, 270)
-	for i := 0; i < 16; i++ {
-		if game.chip8.Keypad[i] == 1 {
-			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%X", i), debugX+(i*15), 285)
-		} else {
-			ebitenutil.DebugPrintAt(screen, ".", debugX+(i*15), 300)
-		}
-	}
-}
-
-func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return gameWidth + debugWidth, gameHeight
-}
-
-func main() {
-	vm := chip8.New()
-
-	game := &Game{
-		chip8:  vm,
-		paused: false,
-	}
-
-	// Load the first ROM by default for WASM
-	game.loadEmbeddedROM(availableROMs[0])
-
-	ebiten.SetWindowTitle("CHIP-8 Go Runtime")
-	ebiten.SetWindowSize(gameWidth+debugWidth, gameHeight)
-
-	// Start the browser loop
-	if err := ebiten.RunGame(game); err != nil {
-		log.Fatal(err)
-	}
-}
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+        });
+    </script>
+</body>
+</html>
