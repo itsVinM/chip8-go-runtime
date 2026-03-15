@@ -24,13 +24,13 @@
             overflow: hidden;
         }
 
-        /* Top Status Bar: Branding + Dynamic ROM */
+        /* Fixed Top Bar: Console Name + Dynamic ROM */
         .status-header {
             flex: 0 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px;
+            padding: 10px 24px;
             background: var(--header-bg);
             border-bottom: 1px solid var(--border);
             font-size: 12px;
@@ -48,25 +48,24 @@
             border: 1px solid var(--border);
         }
         
-        .label { color: var(--text-dim); font-weight: 400; margin-right: 6px; }
         #rom-active { color: var(--accent); text-transform: uppercase; }
+        .label { color: var(--text-dim); font-weight: 400; margin-right: 4px; }
 
-        /* Main Viewport: Reclaiming Vertical Space */
+        /* Viewport: Reclaims the space for the Game */
         .viewport {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             background: #000;
-            padding: 20px;
         }
 
         .screen-frame {
-            width: 100%;
-            max-width: 1100px;
+            width: 95vw;
+            max-width: 1200px;
             aspect-ratio: 2 / 1;
             background: #000;
-            box-shadow: 0 0 60px rgba(0,0,0,0.5);
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
 
         canvas {
@@ -75,11 +74,11 @@
             image-rendering: pixelated;
         }
 
-        /* Compact Footer Legend */
+        /* Horizontal Legend Footer */
         .compact-footer {
             flex: 0 0 auto;
             background: #111;
-            padding: 10px 24px;
+            padding: 12px 24px;
             display: flex;
             justify-content: center;
             gap: 40px;
@@ -94,17 +93,17 @@
 
     <header class="status-header">
         <div class="brand-section">
-            <span class="brand-name">CHIP-8 WORKSTATION</span>
-            <span class="sys-ver">SYS: CORE_V1.24</span>
+            <span class="brand-name">VINCENTIUS CHIP-8</span>
+            <span class="sys-ver">v1.24_STABLE</span>
         </div>
 
         <div class="rom-section">
-            <span class="label">ROM_LOADED:</span>
+            <span class="label">ROM:</span>
             <span id="rom-active">INITIALIZING...</span>
         </div>
 
-        <div class="engine-section">
-            <span class="label">ENGINE:</span> 64X32_XOR
+        <div class="engine-info">
+            <span class="label">CORE:</span> 64X32_XOR
         </div>
     </header>
 
@@ -116,7 +115,7 @@
 
     <footer class="compact-footer">
         <div class="legend-item">
-            <span>MOVE:</span>
+            <span>MAP:</span>
             <span><span class="key-tag">2</span> UP</span>
             <span><span class="key-tag">Q</span> LEFT</span>
             <span><span class="key-tag">E</span> RIGHT</span>
@@ -131,7 +130,7 @@
 
     <script src="wasm_glue_v1.js"></script>
     <script>
-        // Go Bridge
+        // Update ROM name from Go
         window.updateRomName = (name) => {
             const el = document.getElementById("rom-active");
             if (el) el.innerText = name.replace('.ch8', '').toUpperCase();
