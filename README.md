@@ -60,31 +60,26 @@ go test -v ./lib
     --- PASS: TestAllOpcodes/Graphics:_Dxyn_(Word-Level_XOR_Draw) (0.00s)
     --- PASS: TestAllOpcodes/Fault:_Out_of_Bounds_Index_(Robustness) (0.00s)
     --- PASS: TestAllOpcodes/Fault:_Unknown_Opcode_(Graceful_Halt) (0.00s)
-=== RUN   TestRealROMLoad
-[Test] Successfully loaded ../rom/tank.ch8. First opcode: 1301
---- PASS: TestRealROMLoad (0.00s)
 === RUN   TestROMCollection
-=== RUN   TestROMCollection/8-scrolling.ch8
-=== RUN   TestROMCollection/Airplane.ch8
-=== RUN   TestROMCollection/Space_Invaders_[David_Winter]_(alt).ch8
-=== RUN   TestROMCollection/Tetris.ch8
-=== RUN   TestROMCollection/chip8-logo.ch8
-=== RUN   TestROMCollection/horseyJump.ch8
+=== RUN   TestROMCollection/airplane.ch8
+=== RUN   TestROMCollection/brix.ch8
+=== RUN   TestROMCollection/chip8_logo.ch8
+=== RUN   TestROMCollection/horseyjump.ch8
+=== RUN   TestROMCollection/invaders.ch8
+=== RUN   TestROMCollection/pong.ch8
 === RUN   TestROMCollection/tank.ch8
-=== RUN   TestROMCollection/tombstontipp.ch8
-=== RUN   TestROMCollection/trucksimul8or.ch8
+=== RUN   TestROMCollection/ufo.ch8
 --- PASS: TestROMCollection (0.00s)
-    --- PASS: TestROMCollection/8-scrolling.ch8 (0.00s)
-    --- PASS: TestROMCollection/Airplane.ch8 (0.00s)
-    --- PASS: TestROMCollection/Space_Invaders_[David_Winter]_(alt).ch8 (0.00s)
-    --- PASS: TestROMCollection/Tetris.ch8 (0.00s)
-    --- PASS: TestROMCollection/chip8-logo.ch8 (0.00s)
-    --- PASS: TestROMCollection/horseyJump.ch8 (0.00s)
+    --- PASS: TestROMCollection/airplane.ch8 (0.00s)
+    --- PASS: TestROMCollection/brix.ch8 (0.00s)
+    --- PASS: TestROMCollection/chip8_logo.ch8 (0.00s)
+    --- PASS: TestROMCollection/horseyjump.ch8 (0.00s)
+    --- PASS: TestROMCollection/invaders.ch8 (0.00s)
+    --- PASS: TestROMCollection/pong.ch8 (0.00s)
     --- PASS: TestROMCollection/tank.ch8 (0.00s)
-    --- PASS: TestROMCollection/tombstontipp.ch8 (0.00s)
-    --- PASS: TestROMCollection/trucksimul8or.ch8 (0.00s)
+    --- PASS: TestROMCollection/ufo.ch8 (0.00s)
 PASS
-ok      chip8/lib       (cached)
+ok      chip8/lib       0.675s
 ````
 
 ###  System Observability (The Debugger)
