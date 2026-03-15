@@ -6,168 +6,98 @@
     <title>CHIP-8 Workstation</title>
     <style>
         :root { 
-            --bg: #e5e7eb; /* Light Gray */
-            --frame: #ffffff; 
-            --screen-bg: #050505;
-            --accent: #22c55e; /* Bright Green */
-            --key-bg: #f3f4f6;
-            --key-text: #374151;
+            --bg: #fdfdfd; 
+            --accent: #22c55e;
+            --border: #e5e7eb;
+            --text-main: #111827;
+            --text-dim: #6b7280;
         }
         
         body {
             background: var(--bg);
-            color: #1f2937;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-main);
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Top Status Bar */
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .status-group { display: flex; gap: 24px; }
+        .label { color: var(--text-dim); margin-right: 8px; font-weight: 400; }
+        #rom-active { color: var(--accent); text-transform: uppercase; }
+
+        /* Main Viewport */
+        .viewport {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        /* The Main Hardware Console */
-        .workstation {
-            background: var(--frame);
             padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1), inset 0 0 2px white;
-            display: flex;
-            gap: 40px;
-            border: 1px solid #d1d5db;
         }
 
-        /* Screen Section */
-        .screen-area {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .screen-bezel {
-            background: #111;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: inset 0 2px 10px black;
-            width: 640px;
+        .screen-container {
+            width: 100%;
+            max-width: 960px; /* Large, but contained */
+            aspect-ratio: 2 / 1;
+            background: #000;
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border: 1px solid #000;
         }
 
         canvas {
-            width: 100%;
-            aspect-ratio: 2 / 1;
+            width: 100% !important;
+            height: 100% !important;
             image-rendering: pixelated;
             display: block;
         }
-
-        /* Physical Keypad Grid */
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(4, 60px);
-            gap: 10px;
-            padding: 20px;
-            background: #f9fafb;
-            border-radius: 16px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .key {
-            width: 60px;
-            height: 60px;
-            background: var(--key-bg);
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-family: monospace;
-            color: var(--key-text);
-            box-shadow: 0 4px 0 #d1d5db;
-            cursor: pointer;
-            transition: all 0.1s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .key:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #d1d5db;
-            background: var(--accent);
-            color: white;
-        }
-
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            font-weight: 700;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        #rom-active { color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <div class="workstation">
-        <div class="screen-area">
-            <div class="status-bar">
-                <span>Model: Go-Runtime v1.24</span>
-                <span>ROM: <span id="rom-active">BOOT_KERNEL</span></span>
-            </div>
-            
-            <div class="screen-bezel">
-                <canvas id="canvas"></canvas>
-            </div>
-            
-            <div class="status-bar">
-                <span>64X32 Monochromatic XOR</span>
-                <span>CPU: ACTIVE</span>
-            </div>
+    <header class="status-header">
+        <div class="status-group">
+            <div><span class="label">SYSTEM</span>CORE_V1.24</div>
+            <div><span class="label">STATUS</span><span style="color: var(--accent)">● ACTIVE</span></div>
         </div>
+        <div class="status-group">
+            <div><span class="label">ROM_LOADED</span><span id="rom-active">BOOT_KERNEL</span></div>
+            <div><span class="label">ENGINE</span>64X32_XOR</div>
+        </div>
+    </header>
 
-        <div>
-            <div style="margin-bottom: 15px; font-weight: 800; font-size: 12px; color: #6b7280;">INPUT_BUS</div>
-            <div class="keypad">
-                <button class="key" onmousedown="pressKey(1)" onmouseup="releaseKey(1)">1</button>
-                <button class="key" onmousedown="pressKey(2)" onmouseup="releaseKey(2)">2</button>
-                <button class="key" onmousedown="pressKey(3)" onmouseup="releaseKey(3)">3</button>
-                <button class="key" onmousedown="pressKey(12)" onmouseup="releaseKey(12)">C</button>
-                
-                <button class="key" onmousedown="pressKey(4)" onmouseup="releaseKey(4)">4</button>
-                <button class="key" onmousedown="pressKey(5)" onmouseup="releaseKey(5)">5</button>
-                <button class="key" onmousedown="pressKey(6)" onmouseup="releaseKey(6)">6</button>
-                <button class="key" onmousedown="pressKey(13)" onmouseup="releaseKey(13)">D</button>
-                
-                <button class="key" onmousedown="pressKey(7)" onmouseup="releaseKey(7)">7</button>
-                <button class="key" onmousedown="pressKey(8)" onmouseup="releaseKey(8)">8</button>
-                <button class="key" onmousedown="pressKey(9)" onmouseup="releaseKey(9)">9</button>
-                <button class="key" onmousedown="pressKey(14)" onmouseup="releaseKey(14)">E</button>
-                
-                <button class="key" onmousedown="pressKey(10)" onmouseup="releaseKey(10)">A</button>
-                <button class="key" onmousedown="pressKey(0)" onmouseup="releaseKey(0)">0</button>
-                <button class="key" onmousedown="pressKey(11)" onmouseup="releaseKey(11)">B</button>
-                <button class="key" onmousedown="pressKey(15)" onmouseup="releaseKey(15)">F</button>
-            </div>
+    <main class="viewport">
+        <div class="screen-container">
+            <canvas id="canvas"></canvas>
         </div>
-    </div>
+    </main>
 
     <script src="wasm_glue_v1.js"></script>
     <script>
-        // Key handling bridge
-        function pressKey(k) {
-            window.dispatchEvent(new KeyboardEvent('keydown', { 'key': k.toString(16) }));
-        }
-        function releaseKey(k) {
-            window.dispatchEvent(new KeyboardEvent('keyup', { 'key': k.toString(16) }));
-        }
-
         const go = new Go();
         WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
             go.run(result.instance);
         });
 
         window.updateRomName = (name) => {
-            document.getElementById("rom-active").innerText = name.toUpperCase();
+            const el = document.getElementById("rom-active");
+            if (el) el.innerText = name.replace('.ch8', '').toUpperCase();
         };
     </script>
 </body>
